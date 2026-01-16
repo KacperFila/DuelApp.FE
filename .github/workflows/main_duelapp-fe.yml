@@ -1,0 +1,69 @@
+name: Build and Deploy Angular App to Azure
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Print Node and npm versions
+        run: |
+          node -v
+          npm -v
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Angular App
+        run: npm run build --if-present
+
+      - name: Run Tests
+        run: npm run test:ci --if-present
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: angular-app
+          path: dist/duel-app/browser
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: angular-app
+          path: deploy-folder
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0F82FDAE1ED04C0990D6641E1C739287 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_548AE71DC38243CD9F7C360C3D967B73 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A96004ECD3174755ACDB4F720E1184F4 }}
+
+      - name: Deploy Angular App to Azure
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'duelapp-fe'
+          package: deploy-folder
