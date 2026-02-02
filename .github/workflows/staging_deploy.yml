@@ -29,11 +29,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Angular App
-        run: npm run build --if-present
+      - name: Build environment file
+        run: |
+          sed "s|__API_URL__|${{ vars.STAGING_API_URL }}|g" \
+          src/environments/environment.staging.ts > /tmp/environment.staging.ts
+          mv /tmp/environment.staging.ts src/environments/environment.staging.ts
 
       - name: Run Tests
         run: npm run test:ci --if-present
+
+      - name: Build Angular App
+        run: npm run build --configuration=staging
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
