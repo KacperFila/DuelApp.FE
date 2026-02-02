@@ -65,5 +65,5 @@ jobs:
       - name: Deploy Angular App to Azure
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'staging-duelapp-fe'
+          app-name: 'staging-duelapp-fe98179'
           package: deploy-folder
