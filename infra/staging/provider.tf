@@ -1,0 +1,19 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 3.0"
+    }
+  }
+
+  backend "azurerm" {
+    resource_group_name  = "rg-duelapp-tfstate"
+    storage_account_name = "duelappstate25105"
+    container_name       = "tfstate-fe"
+    key                  = "terraform.tfstate"
+  }
+}
+
+provider "azurerm" {
+  features {}
+}

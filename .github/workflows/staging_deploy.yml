@@ -61,15 +61,15 @@ jobs:
           name: angular-app
           path: deploy-folder
 
-      - name: Login to Azure
+      - name: Login to Azure with OIDC
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0F82FDAE1ED04C0990D6641E1C739287 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_548AE71DC38243CD9F7C360C3D967B73 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A96004ECD3174755ACDB4F720E1184F4 }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy Angular App to Azure
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'duelapp-fe'
+          app-name: 'staging-duelapp-fe'
           package: deploy-folder
