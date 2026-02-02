@@ -1,4 +1,13 @@
 # =====================================================
+# Random values
+# =====================================================
+
+resource "random_integer" "suffix" {
+  min = 10000
+  max = 99999
+}
+
+# =====================================================
 # Resource Group
 # =====================================================
 
@@ -18,7 +27,7 @@ resource "azurerm_resource_group" "duelapp_fe_rg" {
 # =====================================================
 
 resource "azurerm_service_plan" "duelapp_fe_plan" {
-  name                = "asp-duelapp-fe-staging"
+  name                = "asp-duelapp-fe-staging${random_integer.suffix.result}"
   location            = azurerm_resource_group.duelapp_fe_rg.location
   resource_group_name = azurerm_resource_group.duelapp_fe_rg.name
 
@@ -37,7 +46,7 @@ resource "azurerm_service_plan" "duelapp_fe_plan" {
 # =====================================================
 
 resource "azurerm_linux_web_app" "duelapp_fe" {
-  name                = "staging-duelapp-fe"
+  name                = "staging-duelapp-fe${random_integer.suffix.result}"
   location            = azurerm_resource_group.duelapp_fe_rg.location
   resource_group_name = azurerm_resource_group.duelapp_fe_rg.name
   service_plan_id     = azurerm_service_plan.duelapp_fe_plan.id
