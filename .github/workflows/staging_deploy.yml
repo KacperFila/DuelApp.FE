@@ -29,11 +29,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build environment file
+      - name: Build environment file for Staging
         run: |
-          sed "s|__API_URL__|${{ vars.STAGING_API_URL }}|g" \
-          src/environments/environment.staging.ts > /tmp/environment.staging.ts
-          mv /tmp/environment.staging.ts src/environments/environment.staging.ts
+          echo "Updating environment.staging.ts with STAGING_API_URL"
+          cat <<EOF > src/environments/environment.staging.ts
+          export const environment = {
+            production: true,
+            apiUrl: '${{ vars.STAGING_API_URL }}'
+          };
+          EOF
 
       - name: Run Tests
         run: npm run test:ci --if-present
