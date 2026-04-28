@@ -3,8 +3,8 @@ import { environment } from '../../../environments/environment';
 
 const keycloak = new Keycloak({
   url: `${environment.keycloakUrl}`,
-  realm: 'duelapp-realm',
-  clientId: 'duelapp_fe_keycloak_client',
+  realm: `${environment.keycloakRealm}`,
+  clientId: `${environment.keycloakClientId}`,
 });
 
 export function initializeKeycloak(): Promise<boolean> {
@@ -20,6 +20,18 @@ export function getToken(): string | undefined {
 
 export function updateToken(): Promise<boolean> {
   return keycloak.updateToken(30);
+}
+
+export function logout(): void {
+  const redirectUri = encodeURIComponent(window.location.origin);
+
+  const logoutUrl =
+    `${environment.keycloakUrl}/realms/${environment.keycloakRealm}/protocol/openid-connect/logout` +
+    `?post_logout_redirect_uri=${redirectUri}` +
+    `&id_token_hint=${keycloak.idToken}`;
+
+  keycloak.logout({ redirectUri });
+  window.location.href = logoutUrl;
 }
 
 export default keycloak;
