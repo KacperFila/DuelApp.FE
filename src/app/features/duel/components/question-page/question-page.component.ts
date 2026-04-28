@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { DuelSignalrService } from '../../services/duel-signalr.service';
+import { logout } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-question-page',
@@ -28,5 +29,9 @@ export class QuestionPageComponent implements OnInit {
 
   protected onSubmit(): void {
     this.signalRService.testUserRouting();
+  }
+
+  protected logout(): void {
+    logout();
   }
 }
