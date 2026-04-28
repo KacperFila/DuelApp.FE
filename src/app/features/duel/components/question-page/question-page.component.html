@@ -1,0 +1,22 @@
+<div class="top-container">
+  <form [formGroup]="questionForm" (ngSubmit)="onSubmit()">
+    <label>
+      <input type="radio" value="A" formControlName="userAnswer" />
+      <span>Answer A</span>
+    </label>
+    <label>
+      <input type="radio" value="B" formControlName="userAnswer" />
+      <span>Answer B</span>
+    </label>
+    <label>
+      <input type="radio" value="C" formControlName="userAnswer" />
+      <span>Answer C</span>
+    </label>
+    <label>
+      <input type="radio" value="D" formControlName="userAnswer" />
+      <span>Answer D</span>
+    </label>
+
+    <button type="submit">Submit answer</button>
+  </form>
+</div>
