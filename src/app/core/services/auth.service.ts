@@ -3,8 +3,8 @@ import { environment } from '../../../environments/environment';
 
 const keycloak = new Keycloak({
   url: `${environment.keycloakUrl}`,
-  realm: 'duelapp',
-  clientId: 'duelapp-frontend',
+  realm: 'duelapp-realm',
+  clientId: 'duelapp_fe_keycloak_client',
 });
 
 export function initializeKeycloak(): Promise<boolean> {
