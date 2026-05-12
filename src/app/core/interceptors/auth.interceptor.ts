@@ -1,15 +1,16 @@
-import keycloak, { updateToken } from '../services/auth.service';
+import { HttpInterceptorFn } from '@angular/common/http';
+import keycloak from '../services/auth.service';
 
-export const authInterceptor: any = async (req: any, next: any) => {
-  if (keycloak.token) {
-    await updateToken();
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const token = keycloak.token;
 
-    req = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${keycloak.token}`,
-      },
-    });
-  }
+  const authReq = token
+    ? req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    : req;
 
-  return next(req);
+  return next(authReq);
 };

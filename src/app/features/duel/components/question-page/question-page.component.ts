@@ -1,37 +1,32 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { DuelSignalrService } from '../../services/duel-signalr.service';
-import { logout } from '../../../../core/services/auth.service';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { map, switchMap, filter } from 'rxjs';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgIf, AsyncPipe } from '@angular/common';
+import { QuestionsService } from '../../services/questions.service';
+import { QuestionWithAnswers } from '../../models/question.model';
 
 @Component({
   selector: 'app-question-page',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterModule, NgIf, AsyncPipe],
   templateUrl: './question-page.component.html',
   styleUrl: './question-page.component.scss',
 })
 export class QuestionPageComponent implements OnInit {
-  constructor(private signalRService: DuelSignalrService) {}
+  protected duelId$ = this.route.paramMap.pipe(
+    map((params) => params.get('duelId')),
+    filter((id): id is string => id !== null),
+  );
 
-  private fb: FormBuilder = new FormBuilder();
-  protected questionForm: FormGroup = this.fb.group({
-    userAnswer: ['', [Validators.required]],
-  });
+  protected questionsWithAnswers$ = this.duelId$.pipe(
+    switchMap(() => this.questionsService.GetQuestionsAndAnswersBatch(5)),
+  );
 
-  ngOnInit(): void {
-    this.signalRService.connect();
-  }
+  constructor(
+    private questionsService: QuestionsService,
+    private route: ActivatedRoute,
+  ) {}
 
-  protected onSubmit(): void {
-    this.signalRService.testUserRouting();
-  }
-
-  protected logout(): void {
-    logout();
-  }
+  ngOnInit(): void {}
 }

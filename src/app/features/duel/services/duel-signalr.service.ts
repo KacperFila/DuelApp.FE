@@ -1,52 +1,41 @@
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { from } from 'rxjs';
-import keycloak from '../../../core/services/auth.service';
+import { Observable, Subject } from 'rxjs';
+import { DuelStartedResponse } from '../models/matchmaking.model';
 import { environment } from '../../../../environments/environment';
+import { getToken } from '../../../core/services/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DuelSignalrService {
   private hubConnection!: HubConnection;
-  private connectionUrl = `${environment.apiUrl}/matchmaking`;
 
-  public connect = () => {
-    this.startConnection();
-  };
+  private duelStartedSubject = new Subject<DuelStartedResponse>();
 
-  public testUserRouting() {
-    const promise = this.hubConnection
-      .invoke('TestUserRouting')
-      .then(() => {
-        console.log('Test message sent');
-      })
-      .catch((err) => {
-        console.log('SignalR error: ' + err);
-      });
+  public duelStarted: Observable<DuelStartedResponse> =
+    this.duelStartedSubject.asObservable();
 
-    return from(promise);
-  }
-
-  private getConnection(): HubConnection {
-    return new HubConnectionBuilder()
-      .withUrl(this.connectionUrl, {
-        accessTokenFactory: async () => {
-          await keycloak.updateToken(30);
-          return keycloak.token!;
-        },
+  public async startConnection(): Promise<void> {
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl(`${environment.apiUrl}/gamehub`, {
+        accessTokenFactory: () => getToken() || '',
       })
       .withAutomaticReconnect()
       .build();
+
+    this.registerHandlers();
+
+    await this.hubConnection.start();
   }
 
-  private startConnection() {
-    this.hubConnection = this.getConnection();
+  private registerHandlers(): void {
+    this.hubConnection.on('DuelStarted', (data: DuelStartedResponse) => {
+      this.duelStartedSubject.next(data);
+    });
 
-    this.hubConnection
-      .start()
-      .catch((err) =>
-        console.log('error while establishing signalr connection: ' + err),
-      );
+    this.hubConnection.on('MatchmakingStarted', () => {
+      console.log(`Matchmaking started`);
+    });
   }
 }
