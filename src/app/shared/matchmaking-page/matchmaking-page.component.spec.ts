@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MatchmakingPageComponent } from './matchmaking-page.component';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
 describe('MatchmakingPageComponent', () => {
   let component: MatchmakingPageComponent;
@@ -8,10 +10,10 @@ describe('MatchmakingPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatchmakingPageComponent]
-    })
-    .compileComponents();
-    
+      imports: [MatchmakingPageComponent],
+      providers: [provideHttpClient(), provideRouter([])],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(MatchmakingPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
