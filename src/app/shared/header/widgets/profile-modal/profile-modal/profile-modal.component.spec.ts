@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProfileModalComponent } from './profile-modal.component';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('ProfileModalComponent', () => {
   let component: ProfileModalComponent;
@@ -8,10 +9,10 @@ describe('ProfileModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfileModalComponent]
-    })
-    .compileComponents();
-    
+      imports: [ProfileModalComponent],
+      providers: [provideHttpClient()],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ProfileModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
