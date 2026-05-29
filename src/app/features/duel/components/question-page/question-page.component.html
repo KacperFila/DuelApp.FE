@@ -1,8 +1,21 @@
-<button type="button" routerLink="/matchmaking">Matchmaking</button>
+<button type="button" (click)="abandonDuel()">Abandon</button>
+
 <div *ngIf="duelId$ | async as duelId">
-  <div *ngIf="questionsWithAnswers$ | async as questions">
-    @for (question of questions; track $index) {
-      {{ question.title }}
+  <div *ngIf="currentRound$ | async as round">
+    {{ round.questionText }}
+    @for (answer of round.answers; track answer.id) {
+      <label>
+        <input
+          type="radio"
+          [value]="answer.id"
+          [formControl]="selectedAnswerId"
+        />
+        {{ answer.answerText }}
+      </label>
+    } @empty {
+      <p>No answers found</p>
     }
+
+    <button (click)="submitAnswer()">Submit answer</button>
   </div>
 </div>

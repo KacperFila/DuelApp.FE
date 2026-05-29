@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { map, switchMap, filter } from 'rxjs';
-import { ReactiveFormsModule } from '@angular/forms';
+import { map, filter, Observable, merge } from 'rxjs';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NgIf, AsyncPipe } from '@angular/common';
-import { QuestionsService } from '../../services/questions.service';
-import { QuestionWithAnswers } from '../../models/question.model';
+import { DuelsService } from '../../services/duels.service';
+import { DuelRoundDto } from '../../models/duel.model';
+import { DuelSignalrService } from '../../services/duel-signalr.service';
 
 @Component({
   selector: 'app-question-page',
@@ -13,20 +14,34 @@ import { QuestionWithAnswers } from '../../models/question.model';
   templateUrl: './question-page.component.html',
   styleUrl: './question-page.component.scss',
 })
-export class QuestionPageComponent implements OnInit {
-  protected duelId$ = this.route.paramMap.pipe(
+export class QuestionPageComponent {
+  private route = inject(ActivatedRoute);
+  private duelsService = inject(DuelsService);
+  private duelSignalrService = inject(DuelSignalrService);
+
+  protected selectedAnswerId = new FormControl<string | null>(null);
+
+  protected duelId$: Observable<string> = this.route.paramMap.pipe(
     map((params) => params.get('duelId')),
     filter((id): id is string => id !== null),
   );
 
-  protected questionsWithAnswers$ = this.duelId$.pipe(
-    switchMap(() => this.questionsService.GetQuestionsAndAnswersBatch(5)),
+  protected currentRound$: Observable<DuelRoundDto> = merge(
+    this.duelsService.GetCurrentRound(),
+    this.duelSignalrService.roundCompleted,
   );
 
-  constructor(
-    private questionsService: QuestionsService,
-    private route: ActivatedRoute,
-  ) {}
+  protected submitAnswer(): void {
+    const answerId = this.selectedAnswerId.value;
 
-  ngOnInit(): void {}
+    if (!answerId) {
+      return;
+    }
+
+    this.duelsService.SubmitAnswer(answerId).subscribe();
+  }
+
+  protected abandonDuel(): void {
+    this.duelsService.AbandonDuel().subscribe();
+  }
 }

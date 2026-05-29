@@ -1,0 +1,31 @@
+<div class="profile-wrapper">
+  <div
+    *ngIf="avatarUri$ | async as avatarUri"
+    class="avatar"
+    (click)="toggleProfileModal()"
+  >
+    <img [src]="avatarUri" alt="profileAvatar" />
+  </div>
+
+  <div class="modal-container" *ngIf="showProfileModal$ | async">
+    <div class="user-info" *ngIf="userInfo$ | async as userInfo">
+      <div class="user-info__property">
+        {{ userInfo.email }}
+      </div>
+    </div>
+
+    <input
+      #fileInput
+      type="file"
+      accept="image/png"
+      hidden
+      (change)="onFileSelected($event)"
+    />
+
+    <button class="button button--accent" (click)="fileInput.click()">
+      Change avatar
+    </button>
+
+    <button class="button button--accent" (click)="logout()">Logout</button>
+  </div>
+</div>

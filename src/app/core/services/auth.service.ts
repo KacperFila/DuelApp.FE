@@ -1,37 +1,48 @@
 import Keycloak from 'keycloak-js';
 import { environment } from '../../../environments/environment';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-const keycloak = new Keycloak({
-  url: `${environment.keycloakUrl}`,
-  realm: `${environment.keycloakRealm}`,
-  clientId: `${environment.keycloakClientId}`,
-});
+@Injectable({
+  providedIn: 'root',
+})
+export class KeycloakAuthService {
+  private keycloak: Keycloak;
 
-export function initializeKeycloak(): Promise<boolean> {
-  return keycloak.init({
-    onLoad: 'login-required',
-    checkLoginIframe: false,
-  });
+  constructor(private httpClient: HttpClient) {
+    this.keycloak = new Keycloak({
+      url: environment.keycloakUrl,
+      realm: environment.keycloakRealm,
+      clientId: environment.keycloakClientId,
+    });
+  }
+
+  async initialize(): Promise<boolean> {
+    const authenticated = await this.keycloak.init({
+      onLoad: 'login-required',
+      checkLoginIframe: false,
+    });
+
+    return authenticated;
+  }
+
+  getToken(): string | undefined {
+    return this.keycloak.token;
+  }
+
+  async updateToken(): Promise<boolean> {
+    return this.keycloak.updateToken(30);
+  }
+
+  logout(): void {
+    const redirectUri = window.location.origin;
+
+    this.keycloak.logout({
+      redirectUri,
+    });
+  }
+
+  getKeycloak(): Keycloak {
+    return this.keycloak;
+  }
 }
-
-export function getToken(): string | undefined {
-  return keycloak.token;
-}
-
-export function updateToken(): Promise<boolean> {
-  return keycloak.updateToken(30);
-}
-
-export function logout(): void {
-  const redirectUri = encodeURIComponent(window.location.origin);
-
-  const logoutUrl =
-    `${environment.keycloakUrl}/realms/${environment.keycloakRealm}/protocol/openid-connect/logout` +
-    `?post_logout_redirect_uri=${redirectUri}` +
-    `&id_token_hint=${keycloak.idToken}`;
-
-  keycloak.logout({ redirectUri });
-  window.location.href = logoutUrl;
-}
-
-export default keycloak;

@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { DuelSignalrService } from '../../features/duel/services/duel-signalr.service';
-import { BehaviorSubject, Observable, of, Subject, takeUntil } from 'rxjs';
+import { DuelSignalrService } from '../../../duel/services/duel-signalr.service';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
-import { DuelStartedResponse } from '../../features/duel/models/matchmaking.model';
+import { environment } from '../../../../../environments/environment';
+import { DuelStartedResponse } from '../../../duel/models/matchmaking.model';
 
 @Component({
   selector: 'app-matchmaking-page',
@@ -33,10 +33,10 @@ export class MatchmakingPageComponent implements OnInit, OnDestroy {
         }
       });
   }
-
+  //move to service
   protected startMatchmaking(): void {
     this.httpClient
-      .post(`${environment.apiUrl}/api/matchmaking/start`, {})
+      .post(`${environment.apiUrl}/api/matchmaking`, {})
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => console.log('Matchmaking started'),
