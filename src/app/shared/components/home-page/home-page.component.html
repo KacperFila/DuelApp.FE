@@ -1,0 +1,51 @@
+<div class="home-container">
+  <div class="tiles-container">
+    <div class="row">
+      <div class="column">
+        <div class="tile">
+          <app-tile
+            title="Matchmaking"
+            description="Challenge a random player!"
+            route="/matchmaking"
+          >
+          </app-tile>
+        </div>
+      </div>
+      <div class="column">
+        <div class="tile">
+          <app-tile
+            [inactive]="true"
+            title="Match history"
+            description="See your latest duels"
+            route="/latest-duels"
+          >
+          </app-tile>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="column">
+        <div class="tile">
+          <app-tile
+            [inactive]="true"
+            title="Top players"
+            description="See top players"
+            route="/top-players"
+          >
+          </app-tile>
+        </div>
+      </div>
+      <div class="column">
+        <div class="tile">
+          <app-tile
+            [inactive]="true"
+            title="Statistics"
+            description="Your statistics"
+            route="/statistics"
+          >
+          </app-tile>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

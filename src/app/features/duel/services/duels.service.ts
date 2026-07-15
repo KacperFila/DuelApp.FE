@@ -3,6 +3,7 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DuelRoundDto, SubmitAnswerPayload } from '../models/duel.model';
+import { DuelPreview } from '../models/matchmaking.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,10 @@ export class DuelsService {
 
   public AbandonDuel(): Observable<void> {
     return this.httpClient.delete<void>(`${this.apiUrl}/duel`);
+  }
+
+  public GetCurrentDuelPreview(): Observable<DuelPreview> {
+    return this.httpClient.get<DuelPreview>(`${this.apiUrl}/duel/preview`);
   }
 
   public GetCurrentRound(): Observable<DuelRoundDto> {

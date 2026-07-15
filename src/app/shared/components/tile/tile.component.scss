@@ -1,0 +1,66 @@
+.tile {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    background-color: var(--primary);
+    color: var(--text);
+
+    border-radius: 1rem;
+    box-sizing: border-box;
+
+    text-decoration: none;
+
+    padding: 1.25rem;
+
+    box-shadow: 0 0.1rem 0.1rem var(--gray-300);
+    transform: translateY(-0.0625rem);
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+
+    &:hover {
+        background-color: var(--primary-300);
+    }
+
+    &:active {
+        transform: translateY(0.0625rem);
+    }
+
+    &--inactive {
+        cursor: default;
+        opacity: 0.5;
+        filter: grayscale(0.8);
+        pointer-events: none;
+        transform: none;
+        box-shadow: none;
+
+        &:hover {
+            background-color: var(--primary);
+        }
+    }
+}
+
+.tile__title {
+    font-family: "Bitcount Grid Single", system-ui;
+    font-weight: 300;
+    color: var(--gray-200);
+    font-size: 2rem;
+}
+
+.tile__description {
+    font-family: "Bricolage Grotesque", sans-serif;
+}
+
+.tile__title,
+.tile__description {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}

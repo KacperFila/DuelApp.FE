@@ -1,0 +1,17 @@
+@if (duelInfo$ | async; as duelInfo) {
+  <div class="players-container">
+    <div class="player">
+      <img [src]="duelInfo.player.avatarUri" alt="playerAvatar" />
+      <div class="name">
+        {{ duelInfo.player.email }}
+      </div>
+    </div>
+    <div class="separator">vs</div>
+    <div class="player">
+      <img [src]="duelInfo.opponent.avatarUri" alt="opponentAvatar" />
+      <div class="name">
+        {{ duelInfo.opponent.email }}
+      </div>
+    </div>
+  </div>
+}

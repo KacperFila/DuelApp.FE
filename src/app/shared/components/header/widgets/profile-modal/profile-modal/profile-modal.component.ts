@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { KeycloakAuthService } from '../../../../../core/services/auth.service';
-import { UserInfo } from '../../../../models/auth.model';
-import { AccountService } from '../../../../services/account.service';
+import { KeycloakAuthService } from '../../../../../../core/services/auth.service';
+import { UserInfo } from '../../../../../models/auth.model';
+import { AccountService } from '../../../../../services/account.service';
 
 @Component({
   selector: 'app-profile-modal',
@@ -22,7 +22,8 @@ export class ProfileModalComponent {
   protected readonly userInfo$: Observable<UserInfo | null> =
     this.accountService.getUserInfo();
 
-  protected avatarUri$: Observable<string> = this.accountService.getAvatarUri();
+  protected avatarUri$: Observable<string> =
+    this.accountService.getMyAvatarUri();
 
   protected readonly showProfileModal$ = new BehaviorSubject<boolean>(false);
 
@@ -56,7 +57,7 @@ export class ProfileModalComponent {
 
     this.accountService.uploadAvatar(file).subscribe({
       next: () => {
-        this.avatarUri$ = this.accountService.getAvatarUri();
+        this.avatarUri$ = this.accountService.getMyAvatarUri();
         this.resetInput(input);
       },
       error: () => {

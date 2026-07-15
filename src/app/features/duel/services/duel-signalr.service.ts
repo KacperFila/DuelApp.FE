@@ -55,7 +55,6 @@ export class DuelSignalrService {
     });
 
     this.hubConnection.on('DuelCompleted', () => {
-      alert('DUEL COMPLETED');
       this.router.navigate(['']);
     });
   }

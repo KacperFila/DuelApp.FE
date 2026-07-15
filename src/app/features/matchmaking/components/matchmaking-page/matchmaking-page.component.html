@@ -1,3 +1,54 @@
-<button type="button" routerLink="/">Home</button>
+<div class="matchmaking-container">
+  @if (isMatchmaking$ | async) {
+    <div class="matchmaking-tile">
+      @if (isOpponentFound$ | async) {
+        <h1>Opponent found</h1>
+      } @else {
+        <h1>Matchmaking in progress</h1>
+      }
+      <app-preduel-view></app-preduel-view>
 
-<button (click)="startMatchmaking()">Start matchmaking</button>
+      <div class="progress-indicator">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="time-elapsed">
+        {{ elapsedSeconds$ | async | timeFormat }}
+      </div>
+
+      <button
+        [disabled]="isOpponentFound$ | async"
+        class="button button--cancel"
+        (click)="cancelMatchmaking()"
+      >
+        Cancel
+      </button>
+    </div>
+  } @else {
+    <div class="tiles-container">
+      <div class="row">
+        <div class="column">
+          <div class="tile">
+            <app-tile
+              (click)="startMatchmaking()"
+              title="VS Player"
+              description="Player against another player"
+            >
+            </app-tile>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="tile">
+            <app-tile
+              [inactive]="true"
+              title="VS Bot"
+              description="Play against a bot"
+            >
+            </app-tile>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,17 @@
+.players-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem
+}
+
+.name {
+    font-family: "Bricolage Grotesque", sans-serif;
+}

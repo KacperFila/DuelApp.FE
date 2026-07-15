@@ -16,8 +16,14 @@ export class AccountService {
     return this.httpClient.get<UserInfo>(`${this.apiUrl}/users/me`);
   }
 
-  public getAvatarUri(): Observable<string> {
+  public getMyAvatarUri(): Observable<string> {
     return this.httpClient.get(`${this.apiUrl}/users/me/avatar`, {
+      responseType: 'text',
+    });
+  }
+
+  public getPlayerAvatarUri(userId: string): Observable<string> {
+    return this.httpClient.get(`${this.apiUrl}/users/${userId}/avatar`, {
       responseType: 'text',
     });
   }

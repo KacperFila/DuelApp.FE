@@ -8,7 +8,7 @@
   height: 3rem;
 
   border-radius: 100%;
-  border: solid 2px var(--primary);
+  border: solid 1px var(--gray-100);
   box-shadow: var(--shadow);
   overflow: hidden;
 
@@ -36,11 +36,12 @@
 
   z-index: 1000;
   box-shadow: var(--shadow);
+  width: max-content;
 }
 
 .user-info {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
 
   &__property {
     font-size: 0.875rem;
