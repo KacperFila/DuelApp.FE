@@ -27,7 +27,7 @@ export class DuelsService {
     );
   }
 
-  public SubmitAnswer(answerId: string): Observable<void> {
+  public SubmitAnswer(answerId: string | null): Observable<void> {
     const payload: SubmitAnswerPayload = {
       answerId: answerId,
     };

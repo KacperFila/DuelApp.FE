@@ -1,0 +1,16 @@
+<section
+  [class.warn]="secondsRemaining() <= warnAt"
+  [class.danger]="secondsRemaining() <= dangerAt"
+>
+  <div class="timer">
+    @if (secondsRemaining()) {
+      <span class="label">Time left:</span>
+      <span class="value">
+        {{ formattedRemaining() }}
+      </span>
+    }
+  </div>
+  <div class="progress">
+    <div class="bar" [class.running]="secondsRemaining() > 0"></div>
+  </div>
+</section>

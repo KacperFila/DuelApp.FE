@@ -1,21 +1,53 @@
-<button type="button" (click)="abandonDuel()">Abandon</button>
+<div class="duel" *ngIf="duelData$ | async as duelData">
+  <div class="duel__round-counter">
+    Question {{ duelData.round.number }}/{{ duelData.round.totalRounds }}
+  </div>
 
-<div *ngIf="duelId$ | async as duelId">
-  <div *ngIf="currentRound$ | async as round">
-    {{ round.questionText }}
-    @for (answer of round.answers; track answer.id) {
-      <label>
-        <input
-          type="radio"
-          [value]="answer.id"
-          [formControl]="selectedAnswerId"
-        />
-        {{ answer.answerText }}
-      </label>
-    } @empty {
-      <p>No answers found</p>
-    }
+  <div class="duel__question">
+    <div class="duel__question-title">
+      {{ duelData.round.questionText }}
+    </div>
 
-    <button (click)="submitAnswer()">Submit answer</button>
+    <div class="duel__answers">
+      @for (answer of duelData.round.answers; track answer.id) {
+        <label class="duel__answer">
+          <input
+            type="radio"
+            [value]="answer.id"
+            [formControl]="selectedAnswerId"
+          />
+          {{ answer.answerText }}
+        </label>
+      } @empty {
+        <p class="duel__empty-state">No answers found</p>
+      }
+    </div>
+  </div>
+
+  <div class="duel__navigation">
+    <app-countdown-timer
+      class="duel__timer"
+      [resetKey]="duelData.round.number"
+      (finished)="submitTimeout()"
+    >
+    </app-countdown-timer>
+
+    <div class="duel__actions">
+      <button
+        [disabled]="isAnswerSelectedByUser"
+        class="button button--accent"
+        (click)="submitAnswer()"
+      >
+        Submit answer
+      </button>
+
+      <button
+        class="button button--cancel"
+        type="button"
+        (click)="abandonDuel()"
+      >
+        Abandon
+      </button>
+    </div>
   </div>
 </div>

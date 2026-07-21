@@ -5,11 +5,12 @@ export interface AnswerDto {
 
 export interface DuelRoundDto {
   number: number;
+  totalRounds: number;
   questionId: string;
   questionText: string;
   answers: AnswerDto[];
 }
 
 export interface SubmitAnswerPayload {
-  answerId: string;
+  answerId: string | null;
 }
