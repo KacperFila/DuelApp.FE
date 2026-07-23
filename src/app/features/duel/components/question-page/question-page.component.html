@@ -27,8 +27,8 @@
   <div class="duel__navigation">
     <app-countdown-timer
       class="duel__timer"
-      [resetKey]="duelData.round.number"
-      (finished)="submitTimeout()"
+      [endsAt]="duelData.round.endsAt"
+      [roundDurationSeconds]="duelData.round.roundDurationSeconds"
     >
     </app-countdown-timer>
 
@@ -36,7 +36,7 @@
       <button
         [disabled]="isAnswerSelectedByUser"
         class="button button--accent"
-        (click)="submitAnswer()"
+        (click)="submitAnswer(duelData.round.roundId)"
       >
         Submit answer
       </button>

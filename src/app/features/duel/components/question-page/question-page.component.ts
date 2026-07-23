@@ -44,14 +44,10 @@ export class QuestionPageComponent {
     round: this.currentRound$,
   });
 
-  protected submitAnswer(): void {
+  protected submitAnswer(roundId: string): void {
     const answerId = this.selectedAnswerId.value;
 
-    this.duelsService.SubmitAnswer(answerId).subscribe();
-  }
-
-  protected submitTimeout(): void {
-    this.duelsService.SubmitAnswer(null).subscribe();
+    this.duelsService.SubmitAnswer(roundId, answerId).subscribe();
   }
 
   protected abandonDuel(): void {

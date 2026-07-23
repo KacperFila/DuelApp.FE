@@ -21,7 +21,7 @@ export class PreduelViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.matchmakingService.isOpponentFound$
+    this.matchmakingService.opponentFound$
       .pipe(
         filter(Boolean),
         switchMap(() => this.duelsService.GetCurrentDuelPreview()),

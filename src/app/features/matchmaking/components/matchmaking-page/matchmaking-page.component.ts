@@ -24,8 +24,7 @@ export class MatchmakingPageComponent implements OnDestroy {
 
   protected readonly isMatchmaking$ = this.matchmakingService.isMatchmaking$;
   protected readonly elapsedSeconds$ = this.matchmakingService.elapsedSeconds$;
-  protected readonly isOpponentFound$ =
-    this.matchmakingService.isOpponentFound$;
+  protected readonly isOpponentFound$ = this.matchmakingService.opponentFound$;
 
   public startMatchmaking(): void {
     this.matchmakingService.startMatchmaking();

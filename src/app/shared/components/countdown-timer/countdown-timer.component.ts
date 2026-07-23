@@ -3,9 +3,7 @@ import {
   DestroyRef,
   EventEmitter,
   Input,
-  OnChanges,
   Output,
-  SimpleChanges,
   computed,
   inject,
   signal,
@@ -17,61 +15,85 @@ import {
   templateUrl: './countdown-timer.component.html',
   styleUrls: ['./countdown-timer.component.scss'],
 })
-export class CountdownTimerComponent implements OnChanges {
-  @Input() resetKey!: number;
+export class CountdownTimerComponent {
+  @Input({ required: true }) endsAt!: Date;
+  @Input({ required: true }) roundDurationSeconds!: number;
+
   @Output() finished = new EventEmitter<void>();
 
-  readonly total = 10;
-  readonly warnAt = 5;
-  readonly dangerAt = 3;
-  readonly secondsRemaining = signal(this.total);
+  readonly warnPercentage = 40;
+  readonly dangerPercentage = 20;
+
+  readonly secondsRemaining = signal(0);
+
+  readonly progress = computed(() => {
+    if (!this.roundDurationSeconds) {
+      return 0;
+    }
+
+    return (this.secondsRemaining() / this.roundDurationSeconds) * 100;
+  });
+
   readonly formattedRemaining = computed(() =>
     this.formatTime(this.secondsRemaining()),
   );
+
+  readonly isWarn = computed(() => {
+    const progress = this.progress();
+
+    return progress <= this.warnPercentage && progress > this.dangerPercentage;
+  });
+
+  readonly isDanger = computed(() => this.progress() <= this.dangerPercentage);
 
   private timerId?: number;
   private finishedEmitted = false;
 
   constructor() {
-    this.startTimer();
-
     inject(DestroyRef).onDestroy(() => this.stopTimer());
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['resetKey'] && !changes['resetKey'].firstChange) {
-      this.reset();
+  ngOnChanges(): void {
+    this.startTimer();
+  }
+
+  private startTimer(): void {
+    this.stopTimer();
+
+    this.finishedEmitted = false;
+    this.updateRemaining();
+
+    this.timerId = window.setInterval(() => {
+      this.updateRemaining();
+    }, 1000);
+  }
+
+  private updateRemaining(): void {
+    const remaining = Math.max(
+      Math.ceil((new Date(this.endsAt).getTime() - Date.now()) / 1000),
+      0,
+    );
+
+    this.secondsRemaining.set(remaining);
+
+    if (remaining === 0 && !this.finishedEmitted) {
+      this.finishedEmitted = true;
+      this.finished.emit();
+      this.stopTimer();
     }
   }
 
   private formatTime(totalSeconds: number): string {
-    return new Date(totalSeconds * 1000).toISOString().slice(14, 19);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 
-  private reset() {
-    this.finishedEmitted = false;
-    this.secondsRemaining.set(this.total);
-    this.startTimer();
-  }
-
-  private startTimer() {
-    this.stopTimer();
-
-    this.timerId = window.setInterval(() => {
-      this.secondsRemaining.update((v) => {
-        const next = Math.max(v - 1, 0);
-
-        if (next === 0 && !this.finishedEmitted) {
-          this.finishedEmitted = true;
-          this.finished.emit();
-        }
-
-        return next;
-      });
-    }, 1000);
-  }
-
-  private stopTimer() {
-    clearInterval(this.timerId);
+  private stopTimer(): void {
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = undefined;
+    }
   }
 }

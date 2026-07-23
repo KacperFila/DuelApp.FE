@@ -4,13 +4,19 @@ export interface AnswerDto {
 }
 
 export interface DuelRoundDto {
+  roundId: string;
   number: number;
   totalRounds: number;
   questionId: string;
   questionText: string;
   answers: AnswerDto[];
+  endsAt: Date;
+  roundDurationSeconds: number;
 }
 
 export interface SubmitAnswerPayload {
+  roundId: string;
   answerId: string | null;
 }
+
+export interface OpponentFoundDto {}

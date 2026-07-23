@@ -10,25 +10,20 @@ import {
   tap,
 } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { DuelStartedResponse } from '../../duel/models/matchmaking.model';
 import { DuelSignalrService } from '../../duel/services/duel-signalr.service';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MatchmakingService {
-  private readonly OPPONENT_DISPLAY_MS: number = 8000;
-
   private readonly apiUrl: string = `${environment.apiUrl}/api`;
-
   private readonly destroy$ = new Subject<void>();
 
   private readonly isMatchmakingSubject = new BehaviorSubject<boolean>(false);
   public readonly isMatchmaking$ = this.isMatchmakingSubject.asObservable();
 
-  private readonly isOpponentFoundSubject = new BehaviorSubject<boolean>(false);
-  public readonly isOpponentFound$ = this.isOpponentFoundSubject.asObservable();
+  private readonly opponentFoundSubject = new BehaviorSubject<boolean>(false);
+  public readonly opponentFound$ = this.opponentFoundSubject.asObservable();
 
   private readonly elapsedSecondsSubject = new BehaviorSubject<number>(0);
   public readonly elapsedSeconds$ = this.elapsedSecondsSubject.asObservable();
@@ -37,25 +32,18 @@ export class MatchmakingService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly signalR: DuelSignalrService,
-    private readonly router: Router,
+    private readonly duelSignalRService: DuelSignalrService,
   ) {
     this.registerSignalR();
   }
 
   private registerSignalR(): void {
-    this.signalR.duelStarted.subscribe((response: DuelStartedResponse) => {
-      if (!response?.duelId) {
-        return;
-      }
+    this.duelSignalRService.opponentFound.subscribe(() => {
+      this.opponentFoundSubject.next(true);
+    });
 
-      this.isOpponentFoundSubject.next(true);
-      this.stopTimer$.next();
-
-      setTimeout(() => {
-        this.resetMatchmakingState();
-        this.router.navigate(['/duel', response.duelId]);
-      }, this.OPPONENT_DISPLAY_MS);
+    this.duelSignalRService.duelStarted.subscribe(() => {
+      this.resetMatchmakingState();
     });
   }
 
@@ -94,7 +82,7 @@ export class MatchmakingService {
 
   public resetMatchmakingState(): void {
     this.isMatchmakingSubject.next(false);
-    this.isOpponentFoundSubject.next(false);
+    this.opponentFoundSubject.next(false);
     this.elapsedSecondsSubject.next(0);
     this.stopTimer$.next();
   }

@@ -1,7 +1,4 @@
-<section
-  [class.warn]="secondsRemaining() <= warnAt"
-  [class.danger]="secondsRemaining() <= dangerAt"
->
+<section [class.warn]="isWarn()" [class.danger]="isDanger()">
   <div class="timer">
     @if (secondsRemaining()) {
       <span class="label">Time left:</span>
@@ -11,6 +8,6 @@
     }
   </div>
   <div class="progress">
-    <div class="bar" [class.running]="secondsRemaining() > 0"></div>
+    <div class="bar" [style.width.%]="progress()"></div>
   </div>
 </section>

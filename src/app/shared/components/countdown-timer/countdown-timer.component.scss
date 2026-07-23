@@ -1,34 +1,47 @@
+section {
+  width: 300px;
+  padding: 1.1rem 1.5rem 1.5rem;
+  background: var(--surface);
+  border: 2px solid var(--surface-2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.timer {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+  font-family: "Bricolage Grotesque", sans-serif;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.value {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
 .progress {
-  width: 100%;
-  height: 8px;
+  height: 6px;
+  margin-top: 0.25rem;
   overflow: hidden;
+  background: var(--gray-200);
+  border-radius: 9999px;
 }
 
 .bar {
   height: 100%;
-  width: 100%;
-  transform-origin: left;
-  transform: scaleX(1);
-  background: var(--primary-400)
-}
-
-.bar.running {
-  animation: countdown linear forwards;
-  animation-duration: 10s;
-}
-
-@keyframes countdown {
-  from {
-    transform: scaleX(1);
-  }
-
-  to {
-    transform: scaleX(0);
-  }
+  background: var(--primary);
 }
 
 .warn {
-  span {
+  .label,
+  .value {
     color: var(--warning);
   }
 
@@ -38,94 +51,12 @@
 }
 
 .danger {
-  span {
+  .label,
+  .value {
     color: var(--error);
   }
 
   .bar {
     background: var(--error);
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-:host {
-  display: grid;
-  place-items: center;
-}
-
-section {
-  background: var(--color-panel);
-  border-radius: var(--radius);
-  border: 2px solid var(--color-border);
-  padding: 1.1rem 1.5rem 1.5rem 1.5rem;
-  width: 300px;
-}
-
-.timer {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-  font-family: system-ui, sans-serif;
-  justify-content: center;
-}
-
-.label {
-  font-size: 0.875rem;
-  color: #6b7280;
-  transition: color 0.3s ease;
-}
-
-.value {
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
-  transition: color 0.3s ease;
-}
-
-.progress {
-  height: 6px;
-  background: #e5e7eb;
-  border-radius: 9999px;
-  overflow: hidden;
-  margin-top: 0.25rem;
 }
