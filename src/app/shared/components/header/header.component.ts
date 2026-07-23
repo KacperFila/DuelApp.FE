@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ProfileModalComponent } from './widgets/profile-modal/profile-modal/profile-modal.component';
+import { ProfileModalComponent } from './widgets/profile-modal/profile-modal.component';
 
 @Component({
   selector: 'app-header',

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DuelComponent } from './duel.component';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
 describe('DuelComponent', () => {
   let component: DuelComponent;
@@ -8,10 +10,10 @@ describe('DuelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DuelComponent]
-    })
-    .compileComponents();
-    
+      imports: [DuelComponent],
+      providers: [provideHttpClient(), provideRouter([])],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(DuelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

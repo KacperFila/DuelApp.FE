@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { Observable, Subject } from 'rxjs';
-import { DuelStartedResponse } from '../models/matchmaking.model';
+import {
+  DuelCompletedDto,
+  DuelStartedResponse,
+} from '../models/matchmaking.model';
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
 import { DuelRoundDto, OpponentFoundDto } from '../models/duel.model';
@@ -18,11 +21,15 @@ export class DuelSignalrService {
 
   private hubConnection!: HubConnection;
   private duelStartedSubject = new Subject<DuelStartedResponse>();
+  private duelCompletedSubject = new Subject<DuelCompletedDto>();
   private roundCompletedSubject = new Subject<DuelRoundDto>();
   private opponentFoundSubject = new Subject<OpponentFoundDto>();
 
   public duelStarted: Observable<DuelStartedResponse> =
     this.duelStartedSubject.asObservable();
+
+  public duelCompleted: Observable<DuelCompletedDto> =
+    this.duelCompletedSubject.asObservable();
 
   public roundCompleted: Observable<DuelRoundDto> =
     this.roundCompletedSubject.asObservable();
@@ -63,8 +70,8 @@ export class DuelSignalrService {
       this.roundCompletedSubject.next(round);
     });
 
-    this.hubConnection.on('DuelCompleted', () => {
-      this.router.navigate(['']);
+    this.hubConnection.on('DuelCompleted', (data: DuelCompletedDto) => {
+      this.duelCompletedSubject.next(data);
     });
   }
 }

@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { KeycloakAuthService } from '../../../../../../core/services/auth.service';
-import { UserInfo } from '../../../../../models/auth.model';
-import { AccountService } from '../../../../../services/account.service';
+import { KeycloakAuthService } from '../../../../../core/services/auth.service';
+import { UserInfo } from '../../../../models/auth.model';
+import { AccountService } from '../../../../services/account.service';
 
 @Component({
   selector: 'app-profile-modal',
@@ -13,16 +13,16 @@ import { AccountService } from '../../../../../services/account.service';
   styleUrl: './profile-modal.component.scss',
 })
 export class ProfileModalComponent {
-  private accountService = inject(AccountService);
-  private authService = inject(KeycloakAuthService);
+  private readonly accountService = inject(AccountService);
+  private readonly authService = inject(KeycloakAuthService);
 
   private static readonly MAX_FILE_SIZE = 2 * 1024 * 1024;
   private static readonly PNG_MIME_TYPE = 'image/png';
 
-  protected readonly userInfo$: Observable<UserInfo | null> =
+  protected readonly userInfo$: Observable<UserInfo> =
     this.accountService.getUserInfo();
 
-  protected avatarUri$: Observable<string> =
+  protected readonly avatarUri$: Observable<string> =
     this.accountService.getMyAvatarUri();
 
   protected readonly showProfileModal$ = new BehaviorSubject<boolean>(false);
@@ -43,21 +43,13 @@ export class ProfileModalComponent {
       return;
     }
 
-    if (!this.isValidPng(file)) {
-      alert('Only PNG files are allowed');
-      this.resetInput(input);
-      return;
-    }
-
-    if (!this.isValidFileSize(file)) {
-      alert('File must be smaller than 2MB');
+    if (!this.isValidFile(file)) {
       this.resetInput(input);
       return;
     }
 
     this.accountService.uploadAvatar(file).subscribe({
       next: () => {
-        this.avatarUri$ = this.accountService.getMyAvatarUri();
         this.resetInput(input);
       },
       error: () => {
@@ -67,12 +59,18 @@ export class ProfileModalComponent {
     });
   }
 
-  private isValidPng(file: File): boolean {
-    return file.type === ProfileModalComponent.PNG_MIME_TYPE;
-  }
+  private isValidFile(file: File): boolean {
+    if (file.type !== ProfileModalComponent.PNG_MIME_TYPE) {
+      alert('Only PNG files are allowed');
+      return false;
+    }
 
-  private isValidFileSize(file: File): boolean {
-    return file.size <= ProfileModalComponent.MAX_FILE_SIZE;
+    if (file.size > ProfileModalComponent.MAX_FILE_SIZE) {
+      alert('File must be smaller than 2MB');
+      return false;
+    }
+
+    return true;
   }
 
   private resetInput(input: HTMLInputElement): void {

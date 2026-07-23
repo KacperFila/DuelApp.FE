@@ -40,6 +40,7 @@ export class MatchmakingService {
   private registerSignalR(): void {
     this.duelSignalRService.opponentFound.subscribe(() => {
       this.opponentFoundSubject.next(true);
+      this.stopTimer$.next();
     });
 
     this.duelSignalRService.duelStarted.subscribe(() => {

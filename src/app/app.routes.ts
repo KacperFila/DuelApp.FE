@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { HomePageComponent } from './shared/components//home-page/home-page.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
-import { QuestionPageComponent } from './features/duel/components/question-page/question-page.component';
 import { MatchmakingPageComponent } from './features/matchmaking/components/matchmaking-page/matchmaking-page.component';
+import { DuelComponent } from './features/duel/components/duel/duel.component';
 
 export const routes: Routes = [
   {
@@ -15,7 +15,7 @@ export const routes: Routes = [
   },
   {
     path: 'duel/:duelId',
-    component: QuestionPageComponent,
+    component: DuelComponent,
   },
   {
     path: '*',
