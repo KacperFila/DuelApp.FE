@@ -1,0 +1,41 @@
+@if (duelCompletedDetails; as duel) {
+  <div class="summary-container">
+    <div class="summary-container--title">
+      <h1>{{ this.duelResult }}</h1>
+    </div>
+    <div class="players-container">
+      <div class="player">
+        <img class="avatar" [src]="myAvatarUri$ | async" alt="playerAvatar" />
+
+        @if (myPlayer$ | async; as player) {
+          <div class="player--name">
+            {{ player.email }}
+          </div>
+        }
+        <div class="player--score">{{ myScore$ | async }} pts</div>
+      </div>
+
+      <div class="separator">vs</div>
+
+      <div class="player">
+        <img
+          class="avatar"
+          [src]="opponentAvatarUri$ | async"
+          alt="opponentAvatar"
+        />
+
+        @if (opponentPlayer$ | async; as player) {
+          <div class="player--name">
+            {{ player.email }}
+          </div>
+        }
+        <div class="player--score">{{ opponentScore$ | async }} pts</div>
+      </div>
+    </div>
+    <div class="summary-container--navigation">
+      <button class="button button--cancel" (click)="summaryClosed.emit()">
+        Close
+      </button>
+    </div>
+  </div>
+}

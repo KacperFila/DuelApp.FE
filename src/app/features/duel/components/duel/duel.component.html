@@ -1,0 +1,9 @@
+@if (this.isDuelCompleted$ | async; as duelCompletedDetails) {
+  <app-duel-summary
+    [duelCompletedDetails]="duelCompletedDetails"
+    (summaryClosed)="closeSummary()"
+  >
+  </app-duel-summary>
+} @else {
+  <app-question-page></app-question-page>
+}
