@@ -20,3 +20,7 @@ export interface SubmitAnswerPayload {
 }
 
 export interface OpponentFoundDto {}
+
+export interface DuelAbandonedDto {
+  abandoningPlayerId: string;
+}

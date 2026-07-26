@@ -38,4 +38,8 @@ export class DuelsService {
 
     return this.httpClient.post<void>(`${this.apiUrl}/duel/answer`, payload);
   }
+
+  public CheckIfUserInActiveDuel(): Observable<boolean> {
+    return this.httpClient.get<boolean>(`${this.apiUrl}/duel/current`);
+  }
 }

@@ -1,7 +1,7 @@
 import Keycloak from 'keycloak-js';
 import { environment } from '../../../environments/environment';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { from, Observable, of, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class KeycloakAuthService {
   private keycloak: Keycloak;
 
-  constructor(private httpClient: HttpClient) {
+  constructor() {
     this.keycloak = new Keycloak({
       url: environment.keycloakUrl,
       realm: environment.keycloakRealm,
@@ -32,6 +32,16 @@ export class KeycloakAuthService {
 
   async updateToken(): Promise<boolean> {
     return this.keycloak.updateToken(30);
+  }
+
+  ensureValidToken(): Observable<string> {
+    const token = this.keycloak.token;
+    if (!token) {
+      return from(this.updateToken()).pipe(
+        switchMap(() => of(this.keycloak.token || ''))
+      );
+    }
+    return of(token);
   }
 
   logout(): void {

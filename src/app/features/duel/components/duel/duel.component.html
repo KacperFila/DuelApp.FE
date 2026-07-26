@@ -5,5 +5,10 @@
   >
   </app-duel-summary>
 } @else {
-  <app-question-page></app-question-page>
+  <div class="question-view">
+    <app-question-page></app-question-page>
+    <button class="button button--cancel" type="button" (click)="abandonDuel()">
+      Abandon
+    </button>
+  </div>
 }

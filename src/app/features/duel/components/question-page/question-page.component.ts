@@ -49,8 +49,4 @@ export class QuestionPageComponent {
 
     this.duelsService.SubmitAnswer(roundId, answerId).subscribe();
   }
-
-  protected abandonDuel(): void {
-    this.duelsService.AbandonDuel().subscribe();
-  }
 }

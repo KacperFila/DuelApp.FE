@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import {
   DuelCompletedDto,
   DuelStartedResponse,
 } from '../models/matchmaking.model';
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
-import { DuelRoundDto, OpponentFoundDto } from '../models/duel.model';
+import {
+  DuelAbandonedDto,
+  DuelRoundDto,
+  OpponentFoundDto,
+} from '../models/duel.model';
 import { KeycloakAuthService } from '../../../core/services/auth.service';
 
 @Injectable({
@@ -22,8 +26,10 @@ export class DuelSignalrService {
   private hubConnection!: HubConnection;
   private duelStartedSubject = new Subject<DuelStartedResponse>();
   private duelCompletedSubject = new Subject<DuelCompletedDto>();
+  private duelAbandonedSubject = new Subject<DuelAbandonedDto>();
   private roundCompletedSubject = new Subject<DuelRoundDto>();
   private opponentFoundSubject = new Subject<OpponentFoundDto>();
+  private duelActiveSubject = new BehaviorSubject<boolean>(false);
 
   public duelStarted: Observable<DuelStartedResponse> =
     this.duelStartedSubject.asObservable();
@@ -31,8 +37,14 @@ export class DuelSignalrService {
   public duelCompleted: Observable<DuelCompletedDto> =
     this.duelCompletedSubject.asObservable();
 
+  public duelActive: Observable<boolean> =
+    this.duelActiveSubject.asObservable();
+
   public roundCompleted: Observable<DuelRoundDto> =
     this.roundCompletedSubject.asObservable();
+
+  public duelAbandoned: Observable<DuelAbandonedDto> =
+    this.duelAbandonedSubject.asObservable();
 
   public opponentFound: Observable<OpponentFoundDto> =
     this.opponentFoundSubject.asObservable();
@@ -54,6 +66,8 @@ export class DuelSignalrService {
     this.hubConnection.on('DuelStarted', (data: DuelStartedResponse) => {
       this.duelStartedSubject.next(data);
       this.router.navigate(['/duel', data.duelId]);
+
+      this.duelActiveSubject.next(true);
     });
 
     this.hubConnection.on('MatchmakingStarted', () => {});
@@ -62,8 +76,9 @@ export class DuelSignalrService {
       this.opponentFoundSubject.next(data);
     });
 
-    this.hubConnection.on('DuelAbandoned', () => {
-      this.router.navigate(['']);
+    this.hubConnection.on('DuelAbandoned', (data: DuelAbandonedDto) => {
+      this.duelAbandonedSubject.next(data);
+      this.duelActiveSubject.next(false);
     });
 
     this.hubConnection.on('RoundCompleted', (round: DuelRoundDto) => {
@@ -72,6 +87,7 @@ export class DuelSignalrService {
 
     this.hubConnection.on('DuelCompleted', (data: DuelCompletedDto) => {
       this.duelCompletedSubject.next(data);
+      this.duelActiveSubject.next(false);
     });
   }
 }
