@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { map, filter, Observable, merge, combineLatest } from 'rxjs';
+import { map, filter, Observable, merge, combineLatest, tap } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { NgIf, AsyncPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { DuelsService } from '../../services/duels.service';
 import { DuelRoundDto } from '../../models/duel.model';
 import { DuelSignalrService } from '../../services/duel-signalr.service';
@@ -12,10 +12,9 @@ import { CountdownTimerComponent } from '../../../../shared/components/countdown
   selector: 'app-question-page',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    NgIf,
-    AsyncPipe,
     CountdownTimerComponent,
   ],
   templateUrl: './question-page.component.html',
@@ -35,18 +34,31 @@ export class QuestionPageComponent {
   );
 
   private currentRound$: Observable<DuelRoundDto> = merge(
-    this.duelsService.GetCurrentRound(),
+    this.duelsService.getCurrentRound(),
     this.duelSignalrService.roundCompleted,
   );
 
   protected duelData$ = combineLatest({
     duelId: this.duelId$,
     round: this.currentRound$,
-  });
+  }).pipe(
+    tap(() => {
+      this.isAnswerSelectedByUser = false;
+      this.selectedAnswerId.enable();
+      this.selectedAnswerId.reset();
+    }),
+  );
 
   protected submitAnswer(roundId: string): void {
     const answerId = this.selectedAnswerId.value;
 
-    this.duelsService.SubmitAnswer(roundId, answerId).subscribe();
+    if (!answerId) {
+      return;
+    }
+
+    this.duelsService.submitAnswer(roundId, answerId).subscribe(() => {
+      this.isAnswerSelectedByUser = true;
+      this.selectedAnswerId.disable();
+    });
   }
 }

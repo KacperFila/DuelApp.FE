@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { KeycloakAuthService } from '../../../../../core/services/auth.service';
-import { UserInfo } from '../../../../models/auth.model';
-import { AccountService } from '../../../../services/account.service';
+import { KeycloakAuthService } from '../../../core/services/auth.service';
+import { UserInfo } from '../../models/auth.model';
+import { AccountService } from '../../services/account.service';
 
 @Component({
   selector: 'app-profile-modal',

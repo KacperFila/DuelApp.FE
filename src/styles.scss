@@ -52,7 +52,8 @@
   transition:
     background-color 0.2s ease,
     transform 0.15s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 
   color: var(--text);
 
@@ -61,14 +62,22 @@
   box-shadow: 0 0.1rem 0.1rem var(--gray-300);
   transform: translateY(-0.0625rem);
 
-  &:active {
+  &:active:not(:disabled) {
     transform: translateY(0.0625rem);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    filter: grayscale(40%);
+    box-shadow: none;
+    transform: none;
   }
 
   &--primary {
     background-color: var(--primary);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--primary-hover);
     }
   }
@@ -76,16 +85,16 @@
   &--accent {
     color: var(--text-secondary);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--accent);
       color: var(--text);
     }
   }
 
   &--cancel {
-      color: var(--text-secondary);
+    color: var(--text-secondary);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--error);
       color: var(--text);
     }
@@ -106,12 +115,13 @@ body {
 .duel-dialog {
   .mat-mdc-dialog-surface {
     font-family: "Bitcount Grid Single", system-ui;
-    color: var(--primary- );
+    color: var(--primary-400);
   }
 
   .mat-mdc-dialog-container .mdc-dialog__surface {
+    padding: 2rem;
     background-color: var(--gray-50);
-    padding: 1rem;
+    font-family: "Bitcount Grid Single", system-ui;
   }
 
   .mat-mdc-dialog-container-with-actions .mat-mdc-dialog-content {

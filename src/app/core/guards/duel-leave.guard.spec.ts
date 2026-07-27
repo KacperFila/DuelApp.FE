@@ -1,11 +1,19 @@
 import { TestBed } from '@angular/core/testing';
-import { CanActivateFn } from '@angular/router';
+import { CanDeactivateFn } from '@angular/router';
 
 import { duelLeaveGuard } from './duel-leave.guard';
+import { DuelComponent } from '../../features/duel/components/duel/duel.component';
 
 describe('duelLeaveGuard', () => {
-  const executeGuard: CanActivateFn = (...guardParameters) => 
-      TestBed.runInInjectionContext(() => duelLeaveGuard(...guardParameters));
+  const executeGuard: CanDeactivateFn<DuelComponent> = (
+    component,
+    currentRoute,
+    currentState,
+    nextState,
+  ) =>
+    TestBed.runInInjectionContext(() =>
+      duelLeaveGuard(component, currentRoute, currentState, nextState),
+    );
 
   beforeEach(() => {
     TestBed.configureTestingModule({});

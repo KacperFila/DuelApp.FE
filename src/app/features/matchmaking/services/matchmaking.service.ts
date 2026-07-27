@@ -6,8 +6,8 @@ import {
   Subject,
   takeUntil,
   catchError,
-  of,
   tap,
+  throwError,
 } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { DuelSignalrService } from '../../duel/services/duel-signalr.service';
@@ -17,7 +17,6 @@ import { DuelSignalrService } from '../../duel/services/duel-signalr.service';
 })
 export class MatchmakingService {
   private readonly apiUrl: string = `${environment.apiUrl}/api`;
-  private readonly destroy$ = new Subject<void>();
 
   private readonly isMatchmakingSubject = new BehaviorSubject<boolean>(false);
   public readonly isMatchmaking$ = this.isMatchmakingSubject.asObservable();
@@ -49,11 +48,8 @@ export class MatchmakingService {
   }
 
   public startMatchmaking(): void {
-    this.isMatchmakingSubject.next(true);
-    this.elapsedSecondsSubject.next(0);
-
     interval(1000)
-      .pipe(takeUntil(this.stopTimer$), takeUntil(this.destroy$))
+      .pipe(takeUntil(this.stopTimer$))
       .subscribe((sec: number) => {
         this.elapsedSecondsSubject.next(sec);
       });
@@ -61,9 +57,13 @@ export class MatchmakingService {
     this.http
       .post(`${this.apiUrl}/matchmaking`, {})
       .pipe(
+        tap(() => {
+          this.isMatchmakingSubject.next(true);
+          this.elapsedSecondsSubject.next(0);
+        }),
         catchError((err) => {
           this.isMatchmakingSubject.next(false);
-          return of(err);
+          return throwError(() => err);
         }),
       )
       .subscribe();
@@ -76,7 +76,7 @@ export class MatchmakingService {
         tap(() => {
           this.resetMatchmakingState();
         }),
-        catchError((err) => of(err)),
+        catchError((err) => throwError(() => err)),
       )
       .subscribe();
   }
@@ -86,10 +86,5 @@ export class MatchmakingService {
     this.opponentFoundSubject.next(false);
     this.elapsedSecondsSubject.next(0);
     this.stopTimer$.next();
-  }
-
-  public destroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

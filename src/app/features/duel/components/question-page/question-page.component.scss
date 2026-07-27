@@ -37,9 +37,24 @@
 
         cursor: pointer;
 
+        transition:
+            opacity 0.2s ease,
+            color 0.2s ease;
+
         input {
             flex-shrink: 0;
             margin-top: 0.35rem;
+            cursor: pointer;
+        }
+
+        &--disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            color: var(--gray-400);
+
+            input {
+                cursor: not-allowed;
+            }
         }
     }
 

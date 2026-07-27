@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, DestroyRef, inject } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import {
@@ -6,7 +6,6 @@ import {
   DuelStartedResponse,
 } from '../models/matchmaking.model';
 import { environment } from '../../../../environments/environment';
-import { Router } from '@angular/router';
 import {
   DuelAbandonedDto,
   DuelRoundDto,
@@ -18,38 +17,44 @@ import { KeycloakAuthService } from '../../../core/services/auth.service';
   providedIn: 'root',
 })
 export class DuelSignalrService {
-  constructor(
-    private router: Router,
-    private authService: KeycloakAuthService,
-  ) {}
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(KeycloakAuthService);
 
-  private hubConnection!: HubConnection;
-  private duelStartedSubject = new Subject<DuelStartedResponse>();
-  private duelCompletedSubject = new Subject<DuelCompletedDto>();
-  private duelAbandonedSubject = new Subject<DuelAbandonedDto>();
-  private roundCompletedSubject = new Subject<DuelRoundDto>();
-  private opponentFoundSubject = new Subject<OpponentFoundDto>();
-  private duelActiveSubject = new BehaviorSubject<boolean>(false);
+  constructor() {
+    this.destroyRef.onDestroy(() => this.stopConnection());
+  }
 
-  public duelStarted: Observable<DuelStartedResponse> =
+  private hubConnection: HubConnection | null = null;
+  private readonly duelCompletedSubject = new Subject<DuelCompletedDto>();
+  private readonly duelAbandonedSubject = new Subject<DuelAbandonedDto>();
+  private readonly roundCompletedSubject = new Subject<DuelRoundDto>();
+  private readonly opponentFoundSubject = new Subject<OpponentFoundDto>();
+  private readonly duelActiveSubject = new BehaviorSubject<boolean>(false);
+  private readonly duelStartedSubject = new Subject<DuelStartedResponse>();
+
+  public readonly duelStarted: Observable<DuelStartedResponse | null> =
     this.duelStartedSubject.asObservable();
 
-  public duelCompleted: Observable<DuelCompletedDto> =
+  public readonly duelCompleted: Observable<DuelCompletedDto> =
     this.duelCompletedSubject.asObservable();
 
-  public duelActive: Observable<boolean> =
+  public readonly duelActive: Observable<boolean> =
     this.duelActiveSubject.asObservable();
 
-  public roundCompleted: Observable<DuelRoundDto> =
+  public readonly roundCompleted: Observable<DuelRoundDto> =
     this.roundCompletedSubject.asObservable();
 
-  public duelAbandoned: Observable<DuelAbandonedDto> =
+  public readonly duelAbandoned: Observable<DuelAbandonedDto> =
     this.duelAbandonedSubject.asObservable();
 
-  public opponentFound: Observable<OpponentFoundDto> =
+  public readonly opponentFound: Observable<OpponentFoundDto> =
     this.opponentFoundSubject.asObservable();
 
   public async startConnection(): Promise<void> {
+    if (this.hubConnection?.state === 'Connected') {
+      return;
+    }
+
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(`${environment.apiUrl}/gamehub`, {
         accessTokenFactory: () => this.authService.getToken() || '',
@@ -58,15 +63,39 @@ export class DuelSignalrService {
       .build();
 
     this.registerHandlers();
+    this.setupReconnectionHandling();
 
     await this.hubConnection.start();
   }
 
+  public async stopConnection(): Promise<void> {
+    if (!this.hubConnection) return;
+
+    this.hubConnection.off('DuelStarted');
+    this.hubConnection.off('MatchmakingStarted');
+    this.hubConnection.off('OpponentFound');
+    this.hubConnection.off('DuelAbandoned');
+    this.hubConnection.off('RoundCompleted');
+    this.hubConnection.off('DuelCompleted');
+
+    await this.hubConnection.stop();
+    this.hubConnection = null;
+    this.duelActiveSubject.next(false);
+  }
+
+  private setupReconnectionHandling(): void {
+    if (!this.hubConnection) return;
+
+    this.hubConnection.onreconnected(() => {
+      this.registerHandlers();
+    });
+  }
+
   private registerHandlers(): void {
+    if (!this.hubConnection) return;
+
     this.hubConnection.on('DuelStarted', (data: DuelStartedResponse) => {
       this.duelStartedSubject.next(data);
-      this.router.navigate(['/duel', data.duelId]);
-
       this.duelActiveSubject.next(true);
     });
 
@@ -81,8 +110,8 @@ export class DuelSignalrService {
       this.duelActiveSubject.next(false);
     });
 
-    this.hubConnection.on('RoundCompleted', (round: DuelRoundDto) => {
-      this.roundCompletedSubject.next(round);
+    this.hubConnection.on('RoundCompleted', (data: DuelRoundDto) => {
+      this.roundCompletedSubject.next(data);
     });
 
     this.hubConnection.on('DuelCompleted', (data: DuelCompletedDto) => {

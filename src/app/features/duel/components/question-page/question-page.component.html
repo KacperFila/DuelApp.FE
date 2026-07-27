@@ -10,7 +10,10 @@
 
     <div class="duel__answers">
       @for (answer of duelData.round.answers; track answer.id) {
-        <label class="duel__answer">
+        <label
+          class="duel__answer"
+          [class.duel__answer--disabled]="isAnswerSelectedByUser"
+        >
           <input
             type="radio"
             [value]="answer.id"

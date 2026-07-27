@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -13,4 +13,12 @@ export class TileComponent {
   @Input() description = '';
   @Input() route?: string | null = null;
   @Input() inactive = false;
+
+  @Output() tileClick = new EventEmitter<void>();
+
+  protected onClick(): void {
+    if (!this.inactive) {
+      this.tileClick.emit();
+    }
+  }
 }

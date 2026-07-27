@@ -11,19 +11,19 @@ import { DuelsService } from '../../../features/duel/services/duels.service';
   selector: 'app-surrender-dialog',
   standalone: true,
   imports: [MatButtonModule, MatDialogActions, MatDialogContent],
-  templateUrl: './surrender-dialog.component.html',
+  templateUrl: './abandon-duel-dialog.component.html',
 })
 export class AbandonDuelDialogComponent {
   constructor(private dialogRef: MatDialogRef<AbandonDuelDialogComponent>) {}
 
-  private duelsService = inject(DuelsService);
+  private readonly duelsService = inject(DuelsService);
 
-  cancel(): void {
+  protected cancel(): void {
     this.dialogRef.close(false);
   }
 
-  abandonDuel(): void {
-    this.duelsService.AbandonDuel().subscribe(() => {
+  protected abandonDuel(): void {
+    this.duelsService.abandonDuel().subscribe(() => {
       this.dialogRef.close(true);
     });
   }

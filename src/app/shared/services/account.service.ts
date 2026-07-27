@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, DestroyRef, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, shareReplay, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -8,7 +8,11 @@ import { UserInfo } from '../models/auth.model';
   providedIn: 'root',
 })
 export class AccountService {
-  constructor(private httpClient: HttpClient) {}
+  private readonly destroyRef = inject(DestroyRef);
+
+  constructor(private httpClient: HttpClient) {
+    this.destroyRef.onDestroy(() => this.clearAllCache());
+  }
 
   private apiUrl: string = `${environment.apiUrl}/api`;
 
@@ -22,7 +26,7 @@ export class AccountService {
     if (!this.userInfo$) {
       this.userInfo$ = this.httpClient
         .get<UserInfo>(`${this.apiUrl}/users/me`)
-        .pipe(shareReplay(1));
+        .pipe(shareReplay({ bufferSize: 1, refCount: true }));
     }
 
     return this.userInfo$;
@@ -34,7 +38,7 @@ export class AccountService {
         .get(`${this.apiUrl}/users/me/avatar`, {
           responseType: 'text',
         })
-        .pipe(shareReplay(1));
+        .pipe(shareReplay({ bufferSize: 1, refCount: true }));
     }
 
     return this.myAvatarCache$;
@@ -51,7 +55,7 @@ export class AccountService {
       .get(`${this.apiUrl}/users/${userId}/avatar`, {
         responseType: 'text',
       })
-      .pipe(shareReplay(1));
+      .pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
     this.playerAvatarCache.set(userId, avatar$);
 
@@ -79,6 +83,12 @@ export class AccountService {
       return;
     }
 
+    this.playerAvatarCache.clear();
+  }
+
+  public clearAllCache(): void {
+    this.userInfo$ = undefined;
+    this.myAvatarCache$ = undefined;
     this.playerAvatarCache.clear();
   }
 }

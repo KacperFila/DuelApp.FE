@@ -1,4 +1,9 @@
-<a class="tile" [class.tile--inactive]="inactive" [routerLink]="route">
+<a
+  class="tile"
+  [class.tile--inactive]="inactive"
+  [routerLink]="route"
+  (click)="onClick()"
+>
   <div class="tile__content">
     <h3 class="tile__title">{{ title }}</h3>
     <p class="tile__description">{{ description }}</p>

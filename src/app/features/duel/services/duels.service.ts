@@ -13,21 +13,21 @@ export class DuelsService {
 
   private apiUrl: string = `${environment.apiUrl}/api`;
 
-  public AbandonDuel(): Observable<void> {
+  public abandonDuel(): Observable<void> {
     return this.httpClient.delete<void>(`${this.apiUrl}/duel`);
   }
 
-  public GetCurrentDuelPreview(): Observable<DuelPreview> {
+  public getCurrentDuelPreview(): Observable<DuelPreview> {
     return this.httpClient.get<DuelPreview>(`${this.apiUrl}/duel/preview`);
   }
 
-  public GetCurrentRound(): Observable<DuelRoundDto> {
+  public getCurrentRound(): Observable<DuelRoundDto> {
     return this.httpClient.get<DuelRoundDto>(
       `${this.apiUrl}/duel/round/current`,
     );
   }
 
-  public SubmitAnswer(
+  public submitAnswer(
     roundId: string,
     answerId: string | null,
   ): Observable<void> {
@@ -39,7 +39,7 @@ export class DuelsService {
     return this.httpClient.post<void>(`${this.apiUrl}/duel/answer`, payload);
   }
 
-  public CheckIfUserInActiveDuel(): Observable<boolean> {
+  public checkIfUserInActiveDuel(): Observable<boolean> {
     return this.httpClient.get<boolean>(`${this.apiUrl}/duel/current`);
   }
 }
