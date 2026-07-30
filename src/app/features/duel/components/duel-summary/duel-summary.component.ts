@@ -47,7 +47,7 @@ export class DuelSummaryComponent implements OnChanges {
 
     this.myPlayer$ = userInfo$.pipe(
       map((userInfo) =>
-        userInfo.id === this.duelCompletedDetails!.playerOneDetails.id
+        userInfo.profileId === this.duelCompletedDetails!.playerOneDetails.profileId
           ? this.duelCompletedDetails!.playerOneDetails
           : this.duelCompletedDetails!.playerTwoDetails,
       ),
@@ -55,7 +55,7 @@ export class DuelSummaryComponent implements OnChanges {
 
     this.opponentPlayer$ = userInfo$.pipe(
       map((userInfo) =>
-        userInfo.id === this.duelCompletedDetails!.playerOneDetails.id
+        userInfo.profileId === this.duelCompletedDetails!.playerOneDetails.profileId
           ? this.duelCompletedDetails!.playerTwoDetails
           : this.duelCompletedDetails!.playerOneDetails,
       ),
@@ -63,7 +63,7 @@ export class DuelSummaryComponent implements OnChanges {
 
     this.myScore$ = userInfo$.pipe(
       map((userInfo) =>
-        userInfo.id === this.duelCompletedDetails!.playerOneDetails.id
+        userInfo.profileId === this.duelCompletedDetails!.playerOneDetails.profileId
           ? this.duelCompletedDetails!.playerOneScore
           : this.duelCompletedDetails!.playerTwoScore,
       ),
@@ -71,18 +71,18 @@ export class DuelSummaryComponent implements OnChanges {
 
     this.opponentScore$ = userInfo$.pipe(
       map((userInfo) =>
-        userInfo.id === this.duelCompletedDetails!.playerOneDetails.id
+        userInfo.profileId === this.duelCompletedDetails!.playerOneDetails.profileId
           ? this.duelCompletedDetails!.playerTwoScore
           : this.duelCompletedDetails!.playerOneScore,
       ),
     );
 
     this.myAvatarUri$ = this.myPlayer$.pipe(
-      switchMap((player) => this.accountService.getPlayerAvatarUri(player.id)),
+      switchMap((player) => this.accountService.getPlayerAvatarUri(player.profileId)),
     );
 
     this.opponentAvatarUri$ = this.opponentPlayer$.pipe(
-      switchMap((player) => this.accountService.getPlayerAvatarUri(player.id)),
+      switchMap((player) => this.accountService.getPlayerAvatarUri(player.profileId)),
     );
 
     userInfo$.subscribe((userInfo) => {
@@ -92,7 +92,7 @@ export class DuelSummaryComponent implements OnChanges {
       }
 
       this.hasCurrentPlayerWon =
-        userInfo.keycloakId === this.duelCompletedDetails!.winnerId;
+        userInfo.userId === this.duelCompletedDetails!.winnerId;
 
       this.duelResult = this.hasCurrentPlayerWon ? 'You won!' : 'You lost!';
     });

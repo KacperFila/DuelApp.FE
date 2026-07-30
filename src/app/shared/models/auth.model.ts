@@ -1,6 +1,6 @@
 export interface UserInfo {
-  id: string;
-  keycloakId: string;
+  profileId: string;
+  userId: string;
   email: string;
   profileImageUrl: string;
 }

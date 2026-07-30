@@ -44,20 +44,20 @@ export class AccountService {
     return this.myAvatarCache$;
   }
 
-  public getPlayerAvatarUri(userId: string): Observable<string> {
-    const cachedAvatar = this.playerAvatarCache.get(userId);
+  public getPlayerAvatarUri(profileId: string): Observable<string> {
+    const cachedAvatar = this.playerAvatarCache.get(profileId);
 
     if (cachedAvatar) {
       return cachedAvatar;
     }
 
     const avatar$ = this.httpClient
-      .get(`${this.apiUrl}/users/${userId}/avatar`, {
+      .get(`${this.apiUrl}/users/${profileId}/avatar`, {
         responseType: 'text',
       })
       .pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
-    this.playerAvatarCache.set(userId, avatar$);
+    this.playerAvatarCache.set(profileId, avatar$);
 
     return avatar$;
   }
@@ -77,9 +77,9 @@ export class AccountService {
       );
   }
 
-  public clearPlayerAvatarCache(userId?: string): void {
-    if (userId) {
-      this.playerAvatarCache.delete(userId);
+  public clearPlayerAvatarCache(profileId?: string): void {
+    if (profileId) {
+      this.playerAvatarCache.delete(profileId);
       return;
     }
 

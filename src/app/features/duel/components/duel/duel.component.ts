@@ -101,7 +101,7 @@ export class DuelComponent {
       .getUserInfo()
       .pipe(takeUntilDestroyed())
       .subscribe((data: UserInfo) => {
-        this.userId = data.keycloakId;
+        this.userId = data.userId;
       });
   }
 }
