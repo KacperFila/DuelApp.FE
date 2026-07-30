@@ -12,6 +12,7 @@ export interface DuelRoundDto {
   answers: AnswerDto[];
   endsAt: Date;
   roundDurationSeconds: number;
+  hasUserSubmittedAnswer: boolean;
 }
 
 export interface SubmitAnswerPayload {

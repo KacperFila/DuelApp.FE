@@ -50,8 +50,12 @@ export class QuestionPageComponent {
   }).pipe(
     tap((duelData: DuelData) => {
       this.currentRoundId = duelData.round.roundId;
-      this.isAnswerSelectedByUser = false;
-      this.selectedAnswerId.enable();
+      this.isAnswerSelectedByUser = duelData.round.hasUserSubmittedAnswer;
+
+      this.isAnswerSelectedByUser
+        ? this.selectedAnswerId.disable()
+        : this.selectedAnswerId.enable();
+
       this.selectedAnswerId.reset();
     }),
   );
