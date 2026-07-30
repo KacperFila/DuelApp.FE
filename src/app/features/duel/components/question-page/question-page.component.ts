@@ -8,6 +8,11 @@ import { DuelRoundDto } from '../../models/duel.model';
 import { DuelSignalrService } from '../../services/duel-signalr.service';
 import { CountdownTimerComponent } from '../../../../shared/components/countdown-timer/countdown-timer.component';
 
+type DuelData = {
+  duelId: string;
+  round: DuelRoundDto;
+};
+
 @Component({
   selector: 'app-question-page',
   standalone: true,
@@ -27,6 +32,7 @@ export class QuestionPageComponent {
 
   protected selectedAnswerId = new FormControl<string | null>(null);
   protected isAnswerSelectedByUser: boolean = false;
+  private currentRoundId: string | null = null;
 
   private duelId$: Observable<string> = this.route.paramMap.pipe(
     map((params) => params.get('duelId')),
@@ -38,11 +44,12 @@ export class QuestionPageComponent {
     this.duelSignalrService.roundCompleted,
   );
 
-  protected duelData$ = combineLatest({
+  protected duelData$: Observable<DuelData> = combineLatest({
     duelId: this.duelId$,
     round: this.currentRound$,
   }).pipe(
-    tap(() => {
+    tap((duelData: DuelData) => {
+      this.currentRoundId = duelData.round.roundId;
       this.isAnswerSelectedByUser = false;
       this.selectedAnswerId.enable();
       this.selectedAnswerId.reset();
@@ -52,13 +59,22 @@ export class QuestionPageComponent {
   protected submitAnswer(roundId: string): void {
     const answerId = this.selectedAnswerId.value;
 
-    if (!answerId) {
+    if (!answerId || this.isAnswerSelectedByUser) {
       return;
     }
 
-    this.duelsService.submitAnswer(roundId, answerId).subscribe(() => {
-      this.isAnswerSelectedByUser = true;
-      this.selectedAnswerId.disable();
+    this.isAnswerSelectedByUser = true;
+    this.selectedAnswerId.disable();
+
+    this.duelsService.submitAnswer(roundId, answerId).subscribe({
+      error: () => {
+        if (this.currentRoundId !== roundId) {
+          return;
+        }
+
+        this.isAnswerSelectedByUser = false;
+        this.selectedAnswerId.enable();
+      },
     });
   }
 }
